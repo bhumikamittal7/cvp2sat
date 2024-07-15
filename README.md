@@ -23,7 +23,9 @@ Each clause is limited to at most 3 literals. We can reduce the unrestricted SAT
 Each clause is limited to at most $k$ literals. To make it exactly $k$ literals, just pad it with dummy variables/duplicate literals.
 
 ## 2-SAT and why it can be solved in poly-time
-Each clause is limited to at most 2 literals. We can solve this using backtracing algorithm. Another method can be by mapping the instance to a graph and checking for the existance of paths using BFS/DFS. 
+Each clause is limited to at most 2 literals. We can solve this using backtracing algorithm (intitutively, this seems to be poly-time or atleast subexponential). 
+
+Another [method](twoSAT.py) can be by mapping the instance to a graph and checking for the existance of paths using BFS/DFS. For an expression with $n$ variables, we can create a graph with $2n$ vertices. Let the number of edges be $m$. The time complexity of this algorithm is $O(2nm)$.
 
 ## Why is 3-SAT NP-complete?
 - 3-SAT is in NP: Given a solution, we can verify it in polynomial time (kinda trivial).
@@ -51,11 +53,8 @@ A hypergraph is a generalization of a graph in which an edge can connect any num
 ## $p$-uniform hypergraph
 A hypergraph is $p$-uniform if every hyperedge has exactly $p$ vertices.
 
-# CLique Problem
+# Clique Problem
 Given a graph $G = (V, E)$ and an integer $k$, find a subset $V' \subseteq V$ of size $k$ such that the subgraph induced by $V'$ is a clique. A clique is a subset of vertices such that every pair of vertices is connected by an edge.
-
-<!-- ## $k$-CLique Problem
-A $k$-clique is a set of $k$ vertices that will have all $k$ choose $p$ hyperedges between them and its total weight is the sum of the weights of the hyperedges.  -->
 
 # Coloring Problem
 Given a graph $G = (V, E)$, find a coloring of the vertices such that no two adjacent vertices have the same color. The chromatic number of a graph is the minimum number of colors needed to color the graph.
