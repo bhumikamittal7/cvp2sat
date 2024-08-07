@@ -34,3 +34,7 @@ This represents the CNF formula (NOT x1 OR x3) AND (x1 OR x3 OR NOT x2)
 - solution: s OPTIMUM FOUND, if the problem can be solved
 - values: v line, specifies the found truth assignment
 - numbers in v line: list of true literals
+
+
+### Documentation
+- [RC2](https://pysathq.github.io/docs/html/api/examples/rc2.html)
