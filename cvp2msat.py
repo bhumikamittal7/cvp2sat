@@ -1,11 +1,32 @@
 from pysat.examples.rc2 import RC2
 from pysat.formula import WCNF
+import random
+
+def random_basis(n):
+    '''
+    Generate n linearly independent vectors
+    '''
+    basis = [[1 if i == j else 0 for j in range(n)] for i in range(n)]
+    
+    for i in range(n):
+        for j in range(i + 1, n):
+            scalar = random.randint(-10, 10)
+            basis[i] = [basis[i][k] + scalar * basis[j][k] for k in range(n)]    
+    return basis
+
+# print(random_basis(n))
 
 # ======================= parameters =======================
 p = 2
 n = 4
 dCap = 99
+basis = random_basis(n)
 # ======================= helper functions =======================
+def inner_product(basis, i, j):
+    '''
+    inner product of the basis vectors, b_i and b_j where i and j are the elements of the clause.
+    '''
+    return sum([basis[i][k] * basis[j][k] for k in range(n)])
 
 def sigma(s):
     '''
@@ -34,23 +55,15 @@ def make_clauses(n):
 
 # print(make_clauses(p,n))
 # print(len(make_clauses(p,n)))
-def inner_product(clause):
-    '''
-    inner product of the basis vectors, b_i and b_j where i and j are the elements of the clause.
 
-    this function is incomplete - need to define the basis vectors and add here
-    returns 1 for now.
-    '''
-    return 1
-
-def clause_weight(clause, dCap):
+def clause_weight(clause, dCap, basis):
     '''
     calculate the weight of a clause based on the given formula.
     '''
     if clause[0] < 0 and clause[1] < 0:
-        weight = dCap + ((2/3)*((-1)**(sigma(clause))) * inner_product(clause))
+        weight = dCap + ((2/3)*((-1)**(sigma(clause))) * inner_product(basis, abs(clause[0]), abs(clause[1])))
     else:
-        weight = dCap - ((1/3)*((-1)**(sigma(clause))) * inner_product(clause))
+        weight = dCap - ((1/3)*((-1)**(sigma(clause))) * inner_product(basis, abs(clause[0]), abs(clause[1])))
 
     return weight
 
@@ -59,7 +72,8 @@ def clause_weight(clause, dCap):
 # ======================= maxsat =======================
 rc2 = RC2(WCNF())  
 for clause in make_clauses(p):
-    rc2.add_clause(clause, weight=clause_weight(clause, dCap))
+    rc2.add_clause(clause, weight=clause_weight(clause, dCap, basis))
 
 for model in rc2.enumerate():
     print(model, rc2.cost)
+    
