@@ -2,28 +2,32 @@ from pysat.examples.rc2 import RC2
 from pysat.formula import WCNF
 import random
 
-def random_basis(n):
+# ======================= helper functions =======================
+def random_basis(n, m):
     '''
-    Generate n linearly independent vectors
+    Generate n linearly independent vectors of dimension m
+    B = (b1, b2, ..., bn) \in \mathbb{R}^{m*n}
     '''
-    basis = [[1 if i == j else 0 for j in range(n)] for i in range(n)]
+    basis = [[1 if i == j else 0 for j in range(m)] for i in range(n)]
     
     for i in range(n):
         for j in range(i + 1, n):
             scalar = random.randint(-10, 10)
-            basis[i] = [basis[i][k] + scalar * basis[j][k] for k in range(n)]    
+            basis[i] = [basis[i][k] + scalar * basis[j][k] for k in range(m)]    
     return basis
 
-# ======================= parameters =======================
-n = 4
-dCap = 10000
-basis = random_basis(n)
-# ======================= helper functions =======================
+def generate_random_vector(m):
+    '''
+    t \in \mathbb{R}^m
+    '''
+    return [random.randint(-10, 10) for i in range(m)]
+
 def inner_product(basis, i, j):
     '''
     inner product of the basis vectors, b_i and b_j where i and j are the elements of the clause.
     '''
-    return sum([basis[i][k] * basis[j][k] for k in range(n)])
+    m = len(basis[0])
+    return sum([basis[i-1][k] * basis[j-1][k] for k in range(m)])
 
 def sigma(s):
     '''
@@ -31,11 +35,9 @@ def sigma(s):
     '''
     count = 0
     for i in s:
-        if i == (n+1):
+        if i == (n+1) or i == -(n+1):
             count += 1
     return count
-
-# print(sigma([-5,5]))
 
 def make_clauses(n):
     '''
@@ -44,18 +46,11 @@ def make_clauses(n):
     clauses = []
     for i in range(1,n+1):
         for j in range(i+1,n+2):
-            if j == n+1:
-                clauses.append([i,j])
-                clauses.append([-i,j])
-            else:
-                clauses.append([i,j])
-                clauses.append([-i,j])
-                clauses.append([i,-j])
-                clauses.append([-i,-j])
+            clauses.append([i,j])
+            clauses.append([-i,j])
+            clauses.append([i,-j])
+            clauses.append([-i,-j])
     return clauses
-
-# print(make_clauses(p,n))
-# print(len(make_clauses(p,n)))
 
 def clause_weight(clause, dCap, basis):
     '''
@@ -68,10 +63,27 @@ def clause_weight(clause, dCap, basis):
 
     return weight
 
+# ======================= input/parameters =======================
+n = 4
+m = 5
+dCap = 1000           #some large constant used to adjust the weight of the clauses
+basis = random_basis(n, m)
+t = generate_random_vector(m)
+basis.append(t)
+
+# ======================= test =======================
+# print(basis)  
+# print(t)
+# print(sigma([-5,5]))
+
+# print(make_clauses(n))
+# print(len(make_clauses(n)))
+
 # print(clause_weight([-1,-2], dCap))
 
 # ======================= maxsat =======================
 rc2 = RC2(WCNF())  
+rc2.add_clause([5])     #set x_{n+1} = 1 (hard clause, because based on assumption)
 for clause in make_clauses(n):
     rc2.add_clause(clause, weight=clause_weight(clause, dCap, basis))
 
