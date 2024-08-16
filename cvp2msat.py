@@ -12,7 +12,7 @@ def random_basis(n, m):
     
     for i in range(n):
         for j in range(i + 1, n):
-            scalar = random.randint(-10, 10)
+            scalar = random.randint(0,1)
             basis[i] = [basis[i][k] + scalar * basis[j][k] for k in range(m)]    
     return basis
 
@@ -20,7 +20,7 @@ def generate_random_vector(m):
     '''
     t \in \mathbb{R}^m
     '''
-    return [random.randint(-10, 10) for i in range(m)]
+    return [random.randint(0,1) for i in range(m)]
 
 def inner_product(basis, i, j):
     '''
@@ -29,7 +29,7 @@ def inner_product(basis, i, j):
     m = len(basis[0])
     return sum([basis[i-1][k] * basis[j-1][k] for k in range(m)])
 
-def sigma(s):
+def sigma(s,n):
     '''
     parse a two tuple and read if either of the element is n+1 or negative of n+1
     '''
@@ -57,16 +57,16 @@ def clause_weight(clause, dCap, basis):
     calculate the weight of a clause based on the given formula.
     '''
     if clause[0] < 0 and clause[1] < 0:
-        weight = dCap + ((2/3)*((-1)**(sigma(clause))) * (inner_product(basis, abs(clause[0]), abs(clause[1]))))
+        weight = dCap + ((2/3)*((-1)**(sigma(clause, n))) * (inner_product(basis, abs(clause[0]), abs(clause[1]))))
     else:
-        weight = dCap - ((1/3)*((-1)**(sigma(clause))) * (inner_product(basis, abs(clause[0]), abs(clause[1]))))
+        weight = dCap - ((1/3)*((-1)**(sigma(clause, n))) * (inner_product(basis, abs(clause[0]), abs(clause[1]))))
 
     return weight
 
 # ======================= input/parameters =======================
 n = 4
-m = 5
-dCap = 1000           #some large constant used to adjust the weight of the clauses
+m = 256
+dCap = 99        #some large constant used to adjust the weight of the clauses
 basis = random_basis(n, m)
 t = generate_random_vector(m)
 basis.append(t)
@@ -79,14 +79,13 @@ basis.append(t)
 # print(make_clauses(n))
 # print(len(make_clauses(n)))
 
-# print(clause_weight([-1,-2], dCap))
-
 # ======================= maxsat =======================
 rc2 = RC2(WCNF())  
-rc2.add_clause([5])     #set x_{n+1} = 1 (hard clause, because based on assumption)
+rc2.add_clause([n+1])     #set x_{n+1} = 1 (hard clause, because based on assumption)
 for clause in make_clauses(n):
     rc2.add_clause(clause, weight=clause_weight(clause, dCap, basis))
 
 for model in rc2.enumerate():
     print(model, rc2.cost)
+print(rc2.oracle_time())
 rc2.delete()
