@@ -2,8 +2,8 @@ from pysat.examples.rc2 import RC2
 from pysat.formula import WCNF
 import numpy as np
 import random
-import time
-import signal
+from numpy.linalg import matrix_rank
+
 
 # ======================= helper functions =======================
 def random_basis(n, m):
@@ -11,7 +11,6 @@ def random_basis(n, m):
     generate n linearly independent vectors of dimension m
     B = (b1, b2, ..., bn) in R^{m*n}
     """
-
     basis = np.eye(n, m, dtype=int)
     for i in range(n):
         for j in range(i + 1, n):
@@ -70,10 +69,8 @@ def print_file(filename, rc2):
         file.write(f"Time taken: {rc2.oracle_time()}\n")
 
 # ======================= input/parameters =======================
-# n = 6  # rank
-# m = n  # dimension (for full rank, m = n)
 dCap = 9999  # some large constant used to adjust the weight of the clauses
-# basis = random_basis(n, m)
+d = 10
 
 # ======================= maxsat function =======================
 def run_maxsat(n, dCap, basis):
@@ -86,54 +83,16 @@ def run_maxsat(n, dCap, basis):
     for clause, weight in zip(clauses, clause_weights):
         rc2.add_clause(clause, weight=weight)
     
-    filename = 'models_output.txt'
-    print_file(filename, rc2)
+    rc2.compute()
+    print(rc2.cost)
+    # filename = 'models_output.txt'
+    # print_file(filename, rc2)
     
     return rc2.oracle_time()
 
-# ======================= timeout =======================
-timeout_seconds = 5*60
-
-def timeout_handler(signum, frame):
-    raise TimeoutError("MaxSAT solver timed out")
-
-signal.signal(signal.SIGALRM, timeout_handler)
-signal.alarm(timeout_seconds)
-
-for n in range(1,11):
+for n in range(2, 10):
     basis = random_basis(n, n)
-    try:
-        start_time = time.time()
-        oracle_time = run_maxsat(n, dCap, basis)
-        print(f"Solver Oracle Time for {n} variables: {oracle_time}")
-    except TimeoutError:
-        elapsed_time = time.time() - start_time
-        print(f"MaxSAT solver timed out for {n} variables after {elapsed_time} seconds.")
-    finally:
-        signal.alarm(0)
-
-
-# ======================= test =======================
-# print(basis)  
-# print(d)
-# print(sigma([-5,5],4))
-
-# print(list(make_clauses(n)))
-# print(len(list(make_clauses(n))))
-
-# ======================= maxsat =======================
-# rc2 = RC2(WCNF())
-# rc2.add_clause([n + 1])  # set x_{n+1} = 1 (hard clause, based on assumption)
-
-# clauses = list(make_clauses(n))
-# for clause in clauses:
-#     rc2.add_clause(clause, weight=clause_weight(clause, dCap, basis, n))
-
-# # for model in rc2.enumerate():
-# #     print(model, rc2.cost)
-
-# filename = 'models_output.txt'
-# print_file(filename, rc2)
-
-# print(rc2.oracle_time())
-# rc2.delete()
+    threshold = (((n+1)**2)*3*dCap) - d**2
+    print(f"Threshold for {n} variables: {threshold}")
+    oracle_time = run_maxsat(n, dCap, basis)
+    print(f"Solver Oracle Time for {n} variables: {oracle_time}")
