@@ -8,22 +8,26 @@ from numpy.linalg import matrix_rank
 # ======================= helper functions =======================
 def random_basis(n, m):
     """
-    generate n linearly independent vectors of dimension m
-    B = (b1, b2, ..., bn) in R^{m*n}
+    generate n linearly independent vectors of dimension m, B = (b1, b2, ..., bn) in R^{m*n}
     """
     basis = np.eye(n, m, dtype=int)
     for i in range(n):
         for j in range(i + 1, n):
             scalar = random.randint(-99, 99)
             basis[i] += scalar * basis[j]
+    # print("basis = ", basis[-2])
+    t = []
+    for i in range(m):
+        t.append(basis[0][i] + basis[-1][i])
 
-    return np.vstack([basis, generate_random_vector(m)]).tolist()
+    return np.vstack([basis, t]).tolist()
+    # return np.vstack([basis, t]).tolist()
 
-def generate_random_vector(m):
-    """
-    generate a random vector t in R^m
-    """
-    return np.random.randint(-99, 100, m)
+# def generate_random_vector(m):
+#     """
+#     generate a random vector t in R^m
+#     """
+#     return np.random.randint(-99, 100, m)
 
 def inner_product(basis, i, j):
     """
@@ -68,7 +72,7 @@ def run_maxsat(n, basis):
     rc2 = RC2(WCNF())
     
     clauses = make_clauses_and_weights(basis, n)
-    print(clauses)
+    print(clauses)  
     
     for clause in clauses:
         # print(clause[:-1])
@@ -85,10 +89,13 @@ def run_maxsat(n, basis):
     
     return rc2.oracle_time()
 
-x = 5
+x = 4
 y = x+1
 for n in range(x, y):
     print("n = ", n)
-    basis = random_basis(n, n)
+    # basis = random_basis(n, n)
+    basis = [[1, -99, 43, -95], [0, 1, 54, -75], [0, 0, 1, 32], [0, 0, 0, 1], [4, -96, 47, -60]]
+    print("basis = ", basis)
+    print("target = ", basis[-1])
     oracle_time = run_maxsat(n, basis)
     print(f"Solver Oracle Time for {n} variables: {oracle_time}")
