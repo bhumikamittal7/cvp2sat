@@ -1,4 +1,4 @@
-from pysat.examples.rc2 import RC2
+from pysat.examples.rc2 import RC2Stratified
 from pysat.formula import WCNF
 import numpy as np
 import random
@@ -107,7 +107,7 @@ def make_soft_clauses(ip_cache, n):
 #================================================================================
 def run_maxsat(n, basis, p, q):
     with open(f"out_{n}.txt", 'a') as file:
-        rc2 = RC2(WCNF())
+        wcnf = WCNF()
         ip_cache = inner_product_cache(basis, n)
 
         hardclauses = make_hard_clauses(n)
@@ -116,10 +116,12 @@ def run_maxsat(n, basis, p, q):
         # print(softclauses)
 
         for c in hardclauses:
-            rc2.add_clause(c)
+            wcnf.append(c)
 
         for c in softclauses:
-            rc2.add_clause(c[:-1], weight=c[-1])
+            wcnf.append(c[:-1], weight=c[-1])
+
+        rc2 = RC2Stratified(wcnf)
 
         # print("=====================================================================")
         file.write(f"n = {n}\n")
@@ -154,7 +156,10 @@ if __name__ == '__main__':
     print("number of cpu cores: ", num_processes)
     # print("=====================================================================")
 
-    n_values = list(range(5, 50))
+    n_values = list(range(12, 13))
 
     with mp.Pool(processes=num_processes) as pool:
         pool.map(main_func, n_values)
+
+# for n in range(5, 6):
+#     main_func(n)
