@@ -1,5 +1,3 @@
-from pysat.examples.rc2 import RC2
-from pysat.formula import WCNF
 import numpy as np
 import random
 
@@ -18,15 +16,12 @@ def random_basis(n, m, seed=None):
             scalar = random.randint(-50, 50)
             basis[i] += scalar * basis[j]
     
-    p,q = random.randint(0, n-1), random.randint(0, n-1)
-    # print("ans: ", p+1, q+1)
+    p,q,r,s,t = random.randint(0, n-1), random.randint(0, n-1), random.randint(0, n-1), random.randint(0, n-1), random.randint(0, n-1)
+    # print("ans: ", p+1, q+1, r+1, s+1, t+1)
     t = []
     for i in range(m):
-        t.append(basis[p][i] + basis[q][i] + np.random.randint(1, 2))
-    return np.vstack([basis, t]).tolist(), p+1, q+1
-
-# def inner_product(basis, i, j):
-#     return np.dot(basis[i-1], basis[j-1])
+        t.append(basis[p][i] + basis[q][i] + basis[r][i] + basis[s][i] + basis[t][i] + np.random.randint(1, 2))
+    return np.vstack([basis, t]).tolist(), p+1, q+1, r+1, s+1, t+1
 
 def inner_product_cache(basis, n):
     """
@@ -50,21 +45,6 @@ def make_hard_clauses(n):
             count += 1
     return hardclauses
 
-# def make_soft_clauses(basis, n):
-#     count = n+2
-#     d = 9999
-#     clauses = []
-#     for i in range(1, n+1):
-#         wxi = d + (2*inner_product(basis, i, n+1)) - inner_product(basis, i, i)
-#         clauses.append([i, wxi])
-#         clauses.append([-i, d])
-#         for j in range(i+1, n+1):
-#             wxj = d - (2*inner_product(basis, i, j))
-#             clauses.append([count, wxj])
-#             clauses.append([-count, d])
-#             count += 1
-#     return clauses
-
 def find_d(ip_cache, n):
     d = 0
     for i in range(1, n+1):
@@ -78,7 +58,6 @@ def make_soft_clauses(ip_cache, n):
     count = n+2
     clauses = []
     d = find_d(ip_cache, n)
-    # print("d = ", d)
     for i in range(1, n+1):
         wxi = d + (2*ip_cache[(i, n+1)]) - ip_cache[(i, i)]
         clauses.append([i, wxi])
@@ -93,7 +72,7 @@ def make_soft_clauses(ip_cache, n):
 
 def main_func(n):
     seed = 42
-    basis, p, q = random_basis(n, n, seed=seed)
+    basis, p, q, r,s,t = random_basis(n, n, seed=seed)
     # print("basis = ", basis)
     # print("target = ", basis[-1])
     ip_cache = inner_product_cache(basis, n)
@@ -105,7 +84,7 @@ def main_func(n):
     # print("d = ", d)
     # print("p = ", p)
     # print("q = ", q)
-    return hardclauses, softclauses, d, p, q
+    return hardclauses, softclauses, d, p, q,r,s,t
 
 
 def save_wcnf(hardclauses, softclauses, top, filename="output.txt"):
@@ -133,7 +112,7 @@ def save_wcnf(hardclauses, softclauses, top, filename="output.txt"):
 
     print(f"WCNF file saved as {filename}")
 
-for n in range(5, 50):
-    hardclauses, softclauses, d, p, q = main_func(n)
+for n in range(15, 16):
+    hardclauses, softclauses, d, p, q,r,s,t = main_func(n)
     d = d + 10
-    save_wcnf(hardclauses, softclauses, d, f"input_{n}.txt")
+    save_wcnf(hardclauses, softclauses, d, f"input_{n}_new.txt")
