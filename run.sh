@@ -1,9 +1,0 @@
-./Open-WBO-Inc/open-wbo-inc_static inputFiles/input_5.txt
-./Open-WBO-Inc/open-wbo-inc_static inputFiles/input_6.txt
-./Open-WBO-Inc/open-wbo-inc_static inputFiles/input_7.txt
-./Open-WBO-Inc/open-wbo-inc_static inputFiles/input_8.txt
-./Open-WBO-Inc/open-wbo-inc_static inputFiles/input_9.txt
-./Open-WBO-Inc/open-wbo-inc_static inputFiles/input_10.txt
-./Open-WBO-Inc/open-wbo-inc_static inputFiles/input_11.txt
-./Open-WBO-Inc/open-wbo-inc_static inputFiles/input_12.txt
-./Open-WBO-Inc/open-wbo-inc_static inputFiles/input_13.txt
