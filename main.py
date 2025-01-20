@@ -120,8 +120,7 @@ def run_maxsat(n, basis, p, q):
         hardclauses = make_hard_clauses(n)
         softclauses,d = make_soft_clauses(ip_cache, n)
         # cardclauses = cardconstraint(n*(n-1)//2)
-       
-
+        
         # for c in cardclauses:
         #     wcnf.append(c, is_atmost=True)
 
@@ -161,7 +160,7 @@ def run_maxsat(n, basis, p, q):
 signal.signal(signal.SIGALRM, handler)
 
 def main_func(n):
-    seed = 42
+    seed = 4
     for i in range(seed, seed+1):
         basis, p, q = random_basis(n, n, seed=i)
         print("basis = ", basis)
